@@ -1,0 +1,12 @@
+setup.py
+backend/__init__.py
+backend/api.py
+backend/data_processing.py
+crimes_analysis.egg-info/PKG-INFO
+crimes_analysis.egg-info/SOURCES.txt
+crimes_analysis.egg-info/dependency_links.txt
+crimes_analysis.egg-info/top_level.txt
+frontend/__init__.py
+frontend/app.py
+utils/__init__.py
+utils/constants.py
