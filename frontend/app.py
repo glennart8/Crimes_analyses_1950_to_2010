@@ -2,6 +2,12 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import requests
+from backend.data_processing import DataExplorer
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent  # gå upp två nivåer om du är i frontend/
+sys.path.insert(0, str(PROJECT_ROOT))
 
 # --- SIDINSTÄLLNINGAR ---
 st.set_page_config(
@@ -11,23 +17,11 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- Bakgrundsbild med CSS ---
-background_css = """
-<style>
-[data-testid="stAppViewContainer"] {
-    background-image: url("https://media.istockphoto.com/id/910060330/sv/foto/dokument-s%C3%B6k.jpg?s=2048x2048&w=is&k=20&c=mdYhd0eOOV-rLJFjyTaL-eOciw8wFluBB8A4JPi6dnw=");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-[data-testid="stHeader"] {
-    background: rgba(0,0,0,0);  /* gör toppbaren transparent */
-}
-</style>
-"""
-st.markdown(background_css, unsafe_allow_html=True)
+# --- Ladda in extern CSS ---
+with open("frontend/style.css") as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-# Ta bort Streamlit-menyer
+# Ta bort Streamlit-menyer, måst etyfligen vara här
 hide_streamlit_style = """
 <style>
 #MainMenu {visibility: hidden;}
@@ -43,6 +37,7 @@ API_URL = "http://127.0.0.1:8000"
 ENDPOINT_ALL = "/all_data"
 ENDPOINT_CATEGORIZED = "/categorized_crimes"
 ENDPOINT_KPIS = "/kpis"
+ENDPOINT_PLOT_YEAR = "/plot_per_year"
 
 # --- Hämta data för kategoriserade brott ---
 response = requests.get(f"{API_URL}{ENDPOINT_CATEGORIZED}")
@@ -67,20 +62,51 @@ col1.metric("Totalt antal brott", kpis["total_crimes"])
 col2.metric("Population", kpis["population"])
 col3.metric("Brott per capita", f"{kpis['avg_crimes_per_capita']:.6f}")
 
-# --- Pie chart för brottskategorier ---
-categories = ['Våldsbrott', 'Stöldbrott', 'Ekonomiska brott', 'Vandalisering', 'Under influenser']
-values = [
-    row['Violent'].values[0],
-    row['Theft'].values[0],
-    row['Economic'].values[0],
-    row['Vandal'].values[0],
-    row['Alc/Drug'].values[0]
-]
+col_left, col_right = st.columns([2, 2])
 
-fig = px.pie(
-    names=categories,
-    values=values,
-    title=f'Brottsandelar år {year}'
-)
-fig.update_traces(textinfo='percent+label')
-st.plotly_chart(fig, use_container_width=True)
+with col_left:
+    
+    # --- Pie chart för brottskategorier ---
+    categories = ['Våldsbrott', 'Stöldbrott', 'Ekonomiska brott', 'Vandalisering', 'Under influenser']
+    values = [
+        row['Violent'].values[0],
+        row['Theft'].values[0],
+        row['Economic'].values[0],
+        row['Vandal'].values[0],
+        row['Alc/Drug'].values[0]
+    ]
+
+    fig = px.pie(
+        names=categories,
+        values=values,
+        title=f'Brottsandelar år {year}'
+    )
+    fig.update_traces(textinfo='percent+label')
+    fig.update_layout(
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    paper_bgcolor='rgba(0,0,0,0)'
+                    )
+    
+    
+    st.plotly_chart(fig, use_container_width=True)
+    
+# --- FÖR PLOT BROTT / YEAR ---
+response = requests.get(f"{API_URL}{ENDPOINT_PLOT_YEAR}")
+df_plot = pd.DataFrame(response.json())    
+    
+with col_right:
+    fig = px.line(
+        df_plot,
+        x='Year',
+        y='Count',
+        color='Crime',
+        title='Brottstyper över åren',
+        labels={'Count':'Antal brott', 'Year':'År'}
+    )
+    fig.update_layout(
+                    legend=dict(title='Brottstyp', x=1.05, y=1),
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    paper_bgcolor='rgba(0,0,0,0)'
+                    )
+    st.plotly_chart(fig, use_container_width=True)
+

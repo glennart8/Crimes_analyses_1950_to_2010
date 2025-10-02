@@ -1,0 +1,46 @@
+/* Bakgrund och overlay */
+[data-testid="stAppViewContainer"] {
+    background-image: url("https://cdn.pixabay.com/photo/2020/06/16/14/39/phone-5305890_1280.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+/* Mörkt overlay ovanpå bakgrunden */
+[data-testid="stAppViewContainer"]::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 0;
+}
+
+/* Gör innehållet synligt ovanpå overlay */
+[data-testid="stAppViewContainer"] > div {
+    position: relative;
+    z-index: 1;
+}
+
+/* Ta bort extra toppmarginal/padding på hela appen */
+.block-container {
+    padding-top: 1rem; /* minska från default 3-4rem */
+}
+
+/* Header */
+[data-testid="stHeader"] {
+    background: rgba(0,0,0,0);
+    margin-bottom: 0;
+    height: 0;
+    visibility: hidden;
+}
+
+/* Transparenta boxar för col_left och col_right */
+.transparent-box {
+    background-color: rgba(255, 255, 255, 0.2); /* vit med 20% opacitet */
+    padding: 1rem;
+    border-radius: 10px;
+}

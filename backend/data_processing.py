@@ -1,6 +1,6 @@
 from utils.constants import CSV_PATH
 import pandas as pd
-import json
+import plotly.express as px
 
 df = pd.read_csv(CSV_PATH, header=0, encoding="utf-8")
 
@@ -9,13 +9,14 @@ class DataExplorer:
     def __init__(self):
         self._df = df.reset_index(drop=True)
 
+    # "Skyddar" den riktiga "privata" _df
     @property
     def df(self):
         return self._df
     
     
     def categorize_crimes(self):
-        # Definiera brottskategorier
+        # Brottskategorier
         violent_crimes = ['murder', 'assault', 'rape', 'sexual.offenses']
         theft_crimes = ['burglary', 'vehicle.theft', 'shop.theft', 'stealing.general', 'out.of.vehicle.theft', 'robbery']
         vandal_crimes = ['criminal.damage']
@@ -48,6 +49,21 @@ class DataExplorer:
 
     def json_response(self):
         return self._df.to_dict(orient='records')
+
+    def show_crimes_per_year(self):
+        exclude_cols = ['Year', 'crimes.total', 'crimes.penal.code', 'crimes.person', 'population']
+        crime_cols = [col for col in self._df.columns if col not in exclude_cols]
+
+        df_long = self._df.melt(
+            id_vars=['Year'],
+            value_vars=crime_cols,
+            var_name='Crime',
+            value_name='Count'
+        )
+
+        return df_long.to_dict(orient='records')  # Returnerar serialiserbart format
+
+
 
 if __name__ == "__main__":
     data_explorer = DataExplorer()
