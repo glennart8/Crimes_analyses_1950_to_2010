@@ -11,6 +11,22 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# --- Bakgrundsbild med CSS ---
+background_css = """
+<style>
+[data-testid="stAppViewContainer"] {
+    background-image: url("https://media.istockphoto.com/id/910060330/sv/foto/dokument-s%C3%B6k.jpg?s=2048x2048&w=is&k=20&c=mdYhd0eOOV-rLJFjyTaL-eOciw8wFluBB8A4JPi6dnw=");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+[data-testid="stHeader"] {
+    background: rgba(0,0,0,0);  /* gör toppbaren transparent */
+}
+</style>
+"""
+st.markdown(background_css, unsafe_allow_html=True)
+
 # Ta bort Streamlit-menyer
 hide_streamlit_style = """
 <style>
