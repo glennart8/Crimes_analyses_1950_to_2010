@@ -9,6 +9,19 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent  # gå upp två nivåer om du är i frontend/
 sys.path.insert(0, str(PROJECT_ROOT))
 
+# --- Ladda in extern CSS ---
+with open("frontend/style.css") as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    
+# Ta bort Streamlit-menyer, måst etyfligen vara här
+hide_streamlit_style = """
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+</style>
+"""    
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 # --- SIDINSTÄLLNINGAR ---
 st.set_page_config(
     page_title="Brottsanalys",
@@ -16,19 +29,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
-
-# --- Ladda in extern CSS ---
-with open("frontend/style.css") as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
-# Ta bort Streamlit-menyer, måst etyfligen vara här
-hide_streamlit_style = """
-<style>
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-</style>
-"""
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 st.title("Brottsanalys 1950–2010")
 
@@ -65,7 +65,6 @@ col3.metric("Brott per capita", f"{kpis['avg_crimes_per_capita']:.6f}")
 col_left, col_right = st.columns([2, 2])
 
 with col_left:
-    
     # --- Pie chart för brottskategorier ---
     categories = ['Våldsbrott', 'Stöldbrott', 'Ekonomiska brott', 'Vandalisering', 'Under influenser']
     values = [

@@ -1,13 +1,10 @@
 from utils.constants import CSV_PATH
 import pandas as pd
-import plotly.express as px
-
-df = pd.read_csv(CSV_PATH, header=0, encoding="utf-8")
 
 
 class DataExplorer:
-    def __init__(self):
-        self._df = df.reset_index(drop=True)
+    def __init__(self, csv_path: str = CSV_PATH):
+        self._df = pd.read_csv(csv_path, header=0, encoding="utf-8").reset_index(drop=True)
 
     # "Skyddar" den riktiga "privata" _df
     @property
@@ -62,7 +59,6 @@ class DataExplorer:
         )
 
         return df_long.to_dict(orient='records')  # Returnerar serialiserbart format
-
 
 
 if __name__ == "__main__":
